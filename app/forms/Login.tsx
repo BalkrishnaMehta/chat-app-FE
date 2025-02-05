@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -70,7 +70,7 @@ export default function Login() {
           <button
             type="submit"
             className="bg-[#294B29] text-white px-8 py-3 rounded-3xl hover:bg-[#1e3b1e] transition-colors w-full md:w-4/5 lg:w-3/4">
-            Let's Roll! &nbsp; →
+            Let&apos;s Roll! &nbsp; →
           </button>
         </form>
       </div>

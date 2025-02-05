@@ -43,7 +43,7 @@ export function AuthCheck({ children }: { children: React.ReactNode }) {
     }
 
     initializeAuth();
-  }, []);
+  }, [authState.accessToken, login]);
 
   useEffect(() => {
     if (!authState.accessToken) return;
@@ -65,7 +65,7 @@ export function AuthCheck({ children }: { children: React.ReactNode }) {
     }, 14 * 60 * 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [authState.accessToken]);
+  }, [authState.accessToken, login, logout, pathname, router]);
 
   useEffect(() => {
     if (isChecking) return;
@@ -79,7 +79,7 @@ export function AuthCheck({ children }: { children: React.ReactNode }) {
         router.replace("/authenticate");
       }
     }
-  }, [authState.accessToken, isChecking, pathname]);
+  }, [authState.accessToken, isChecking, pathname, router]);
 
   if (isChecking) {
     return (

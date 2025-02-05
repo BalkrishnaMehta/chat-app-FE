@@ -39,7 +39,7 @@ export default function Messages({
   useEffect(() => {
     setMessages([]);
     setUserLastActive(reciever?.lastActive || null);
-  }, [conversationId, reciever?.id]);
+  }, [conversationId, reciever?.lastActive]);
 
   useEffect(() => {
     if (!reciever?.id) return;
@@ -96,7 +96,7 @@ export default function Messages({
 
   useEffect(() => {
     fetchMessages();
-  }, [conversationId, reciever?.id]);
+  }, [conversationId, reciever?.id, fetchMessages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });

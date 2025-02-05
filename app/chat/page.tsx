@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState, useCallback } from "react";
 import Input from "@/components/Input";
 import Messages from "@/components/Messages";
 import Iconversation from "../../models/Conversation";
@@ -24,17 +24,51 @@ export default function Page() {
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { activeUsers, socket } = useSocket();
 
+  const searchUsers = useCallback(
+    async (query: string) => {
+      try {
+        const response = await fetch(
+          `${
+            process.env.NEXT_PUBLIC_BACKEND_URL
+          }/api/user/search?query=${encodeURIComponent(query)}`,
+          { headers: { Authorization: `Bearer ${authState.accessToken}` } }
+        );
+        const result = await response.json();
+        setsearchResults(result.map((data: { item: User }) => data.item));
+      } catch (error) {
+        console.error("Failed to search users", error);
+      }
+    },
+    [authState.accessToken]
+  );
+
+  const fetchConversations = useCallback(async () => {
+    if (!authState.user) return;
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`,
+        {
+          headers: { Authorization: `Bearer ${authState.accessToken}` },
+        }
+      );
+      const data = await res.json();
+      setConversations(data);
+    } catch (error) {
+      console.error("Failed to fetch conversations", error);
+    }
+  }, [authState.user, authState.accessToken]);
+
   useEffect(() => {
     if (debouncedQuery) {
       searchUsers(debouncedQuery);
     } else {
       setsearchResults([]);
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, searchUsers]);
 
   useEffect(() => {
     fetchConversations();
-  }, []);
+  }, [fetchConversations]);
 
   useEffect(() => {
     const handleMessage = (message: Message) => {
@@ -67,7 +101,7 @@ export default function Page() {
     return () => {
       socket?.off("message", handleMessage);
     };
-  }, [socket]);
+  }, [socket, fetchConversations]);
 
   const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -80,37 +114,6 @@ export default function Page() {
     debounceTimeoutRef.current = setTimeout(() => {
       setDebouncedQuery(value);
     }, 500);
-  };
-
-  const searchUsers = async (query: string) => {
-    try {
-      const response = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_BACKEND_URL
-        }/api/user/search?query=${encodeURIComponent(query)}`,
-        { headers: { Authorization: `Bearer ${authState.accessToken}` } }
-      );
-      const result = await response.json();
-      setsearchResults(result.map((data: { item: User }) => data.item));
-    } catch (error) {
-      console.error("Failed to search users", error);
-    }
-  };
-
-  const fetchConversations = async () => {
-    if (!authState.user) return;
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`,
-        {
-          headers: { Authorization: `Bearer ${authState.accessToken}` },
-        }
-      );
-      const data = await res.json();
-      setConversations(data);
-    } catch (error) {
-      console.error("Failed to fetch conversations", error);
-    }
   };
 
   const renderConversations = () => {

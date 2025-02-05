@@ -14,7 +14,7 @@ export default function Home() {
     } else {
       router.replace("/authenticate");
     }
-  }, [authState.accessToken]);
+  }, [router, authState.accessToken]);
 
   return null;
 }
