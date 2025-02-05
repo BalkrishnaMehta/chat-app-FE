@@ -96,7 +96,7 @@ export default function Messages({
 
   useEffect(() => {
     fetchMessages();
-  }, [conversationId, reciever?.id, fetchMessages]);
+  }, [conversationId, reciever?.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });

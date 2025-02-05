@@ -12,11 +12,11 @@ async function refreshToken() {
         credentials: "include",
       }
     );
-    if (!response.ok) return null; // Return null instead of throwing an error
+    if (!response.ok) return null;
     return response.json();
   } catch (error) {
     console.error("Error refreshing token:", error);
-    return null; // Return null on network errors
+    return null;
   }
 }
 
